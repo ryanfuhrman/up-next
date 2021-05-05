@@ -36,17 +36,16 @@ export default function List() {
     setTasks(updatedArray);
   };
 
-  // const [currentTask, setCurrentTask] = useState("");
-
   const editTask = (e) => {
     // traverse DOM to find task text and use to update currentTask state
     const id = e.target.id;
     const tasksArray = [...tasks];
     tasksArray.map((task) => (task.id === id ? (task.edit = true) : task));
+
     setTasks(tasksArray);
   };
 
-  const updateTask = (e) => {
+  const handleUpdateButton = (e) => {
     const id = e.target.parentElement.id;
     const newTaskText = e.target.previousSibling.value;
     const tasksArray = [...tasks];
@@ -56,7 +55,29 @@ export default function List() {
         task.edit = false;
       }
     });
-    setTasks(tasksArray);
+
+    updateTask(tasksArray);
+  };
+
+  const handleUpdateKey = (e) => {
+    console.log(e);
+
+    const input = e.nativeEvent.path[0];
+    const id = e.nativeEvent.path[1].id;
+    const newTaskText = input.value;
+    const tasksArray = [...tasks];
+    tasksArray.map((task) => {
+      if (task.id === id) {
+        task.text = newTaskText;
+        task.edit = false;
+      }
+    });
+
+    updateTask(tasksArray);
+  };
+
+  const updateTask = (array) => {
+    setTasks(array);
   };
 
   return (
@@ -71,8 +92,13 @@ export default function List() {
           <li className="task-li" key={id}>
             {(edit && (
               <div className="edit-task-container" id={id}>
-                <input defaultValue={text} />
-                <button id={id} onClick={updateTask}>
+                <input
+                  defaultValue={text}
+                  onKeyDown={(e) => {
+                    if (e.code === "Enter") handleUpdateKey(e);
+                  }}
+                />
+                <button id={id} onClick={handleUpdateButton}>
                   Update
                 </button>
               </div>
